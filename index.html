@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Carousel</title>
+</head>
+<style>
+    .container {
+        width: 600px;
+        height: 300px;
+        border: 1px solid black;
+        overflow-x: hidden;
+        position: relative;
+    }
+    .pages {
+        margin-left: -600px;
+        height: 300px;
+        transition: margin-left .5s;
+    }
+    .immediate {
+        transition: none;
+    }
+    .page {
+        width: 600px;
+        height: 300px;
+        float: left;
+        text-align: center;
+        font-size: 5em;
+        font-weight: lighter;
+        line-height: 300px;
+    }
+    .control-button {
+        position: absolute;
+        top: 50%;
+        transform: translate(0, -50%);
+        padding: 10px 5px;
+        background: rgba(30, 30, 30, 0.4);
+        color: white;
+        cursor: pointer;
+        user-select: none;
+    }
+    .previous {
+        border-radius: 0 12px 12px 0;
+        padding-right: 8px;
+    }
+    .next {
+        right: 0;
+        border-radius: 12px 0 0 12px;
+        padding-left: 8px;
+    }
+</style>
+<body>
+<div class="container">
+    <div class="control-button previous">←</div>
+    <div class="control-button next">→</div>
+    <div class="pages">
+        <div class="page" style="background: lightgreen;">1</div>
+        <div class="page" style="background: lightblue;">2</div>
+        <div class="page" style="background: lightgray;">3</div>
+    </div>
+</div>
+<script>
+    const TRANSLATION_DELAY = 1000;
+    let lock = false;
+    const container = document.querySelector('.container');
+    const pages = document.querySelector('.pages');
+    const pagesStyle = getComputedStyle(pages);
+    const firstPage = pages.firstElementChild;
+    const lastPage = pages.lastElementChild;
+    // 在 pages 容器的首尾分别添加第一页和最后一页
+    pages.insertBefore(lastPage.cloneNode(true), firstPage);
+    pages.appendChild(firstPage.cloneNode(true));
+    const PAGE_WIDTH = parseInt(getComputedStyle(firstPage).width);
+    const PAGE_COUNT = pages.childElementCount;
+    const PAGES_WIDTH = PAGE_WIDTH * PAGE_COUNT;
+    // 给 pages 容器设置宽度
+    pages.style.width = PAGES_WIDTH + 'px';
+    let timer;
+    const run = () => {
+        timer = setTimeout(() => {
+            const to = parseInt(pagesStyle.marginLeft) - PAGE_WIDTH;
+            translatePage(to);
+            run();
+        }, TRANSLATION_DELAY);
+    };
+    run();
+    function translatePage(to) {
+        const nowPosition = parseInt(pagesStyle.marginLeft);
+        if (to < nowPosition) {
+            // 从左向右移动
+            if (Math.abs(to) > (PAGES_WIDTH - PAGE_WIDTH)) {
+                const newPosition = -PAGE_WIDTH;
+                _translatePage(newPosition, true);
+                to = newPosition - PAGE_WIDTH;
+            }
+            play(() => _translatePage(to));
+        } else if (to > nowPosition) {
+            // 从右向左移动
+            if (to > 0) {
+                const newPosition = -PAGES_WIDTH + (2 * PAGE_WIDTH);
+                _translatePage(newPosition, true);
+                to = newPosition + PAGE_WIDTH;
+            }
+            play(() => _translatePage(to));
+        } else {
+            // 不动，什么也不做
+        }
+    }
+    // listeners
+    container.addEventListener('mouseenter', () => clearTimeout(timer));
+    container.addEventListener('mouseleave', run);
+    pages.addEventListener('transitionend', () => lock = false, true);
+    document.querySelector('.previous').addEventListener('click', () => {
+        if (lock) return;
+        translatePage(parseInt(pagesStyle.marginLeft) + PAGE_WIDTH);
+    });
+    document.querySelector('.next').addEventListener('click', () => {
+        if (lock) return;
+        translatePage(parseInt(pagesStyle.marginLeft) - PAGE_WIDTH);
+    });
+    // helpers
+    function _translatePage(to, immediate) {
+        lock = true;
+        pages.className = 'pages' + (immediate ? ' immediate' : '');
+        pages.style.marginLeft = to + 'px';
+    }
+    function play(callback) {
+        window.requestAnimationFrame(() =>
+            window.requestAnimationFrame(callback));
+    }
+</script>
+</body>
+</html>
