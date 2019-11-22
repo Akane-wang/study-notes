@@ -40,6 +40,9 @@
 - 阴影的position
   - 阴影盒子不影响其他盒子的布局。因此修改阴影位置或尺寸时，只会触发repaint（重绘），而不会触发reflow（回流）。
 
+# box-shadow
+    box-shadow: insert(可省略) 0.02rem(x轴) 0.02rem(y轴) 0.05rem(高斯模糊) rgba(0,0,0,0.12)(颜色和不透明度，不透明度由rgba给);
+
 
 # transform: translate();
 
@@ -103,6 +106,8 @@
       - ·永远不要·在你写一个第三方插件时使用!important
       - ·永远不要·在全站范围使用!important
 
+# 选择器
+a > b :表示a下的直接的孩子b才会有这个效果  
 ## 奇怪的选择器： + label[data-placeholder]
 - 有data-placeholder这个属性的label标签
 

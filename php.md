@@ -5,7 +5,7 @@
 # 当报错说Invalid argument supplied for foreach()：即for循环是无效参数时
 在对其进行for循环以前，先将这个for循环的数组对象通过if条件判断，判断为true了再嵌套for循环
 
-```
+```php
 <?php if(is_array($_LANG['coupon-obtain-list'])):?>
     <? foreach($_LANG['coupon-obtain-list'] as $item): ?>
         <div class="single-coupon-box">
@@ -18,6 +18,10 @@
             </div>
         </div>
     <? endforeach; ?>
+<?php endif?>
+
+
+<?php if(is_array()):?>
 <?php endif?>
 ```
 
@@ -36,3 +40,8 @@ PC-de:d/de/for-business(index)
 
 # PHP模板语法判断item为true或是false
  - <? if($item['itemName']): ?>
+
+# 跳转到正确的对应的服里的代码实现
+```php
+<a class="sk-button ui-button empty-button visit-more" href="<?=rpg_get_locale_url($_LANG['visit-href'])?>"><?= $_LANG['visit-store'] ?></a>
+```
